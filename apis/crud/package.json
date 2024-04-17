@@ -1,0 +1,19 @@
+{
+  "name": "crud",
+  "version": "1.0.0",
+  "description": "Crud Microservice",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pvpasall/UserManage_MS.git"
+  },
+  "author": "Groupe 11",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pvpasall/UserManage_MS/issues"
+  },
+  "homepage": "https://github.com/Pvpasall/UserManage_MS#readme"
+}
