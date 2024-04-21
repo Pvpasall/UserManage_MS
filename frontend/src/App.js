@@ -3,6 +3,8 @@ import { createBrowserRouter } from "react-router-dom";
 import { Login } from "./page/Login.tsx";
 import { Home } from "./page/Home.tsx";
 import { Register } from "./page/Register.tsx";
+import { Profile } from "./page/Profile.tsx";
+
 
 function App() {
   const router = createBrowserRouter([
@@ -17,6 +19,10 @@ function App() {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/profile",
+      element: <Profile />,
     },
     {
       path: "*",
