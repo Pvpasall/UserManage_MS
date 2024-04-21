@@ -6,8 +6,6 @@ const getIdFromToken = require("../utils/getIdFromToken");
 router.get("/", async (req, res) => {
   try {
     const userId = getIdFromToken(req);
-    console.log(userId);
-
     // Make an HTTP GET request to fetch profile data from another server
     const response = await fetch(`http://localhost:3001/profile/${userId}`);
     const profileData = await response.json();
@@ -21,12 +19,10 @@ router.get("/", async (req, res) => {
     res.json(profileData);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Le serveur a rencontré un problème lors de la récupération du profil.",
-      });
+    res.status(500).json({
+      message:
+        "Le serveur a rencontré un problème lors de la récupération du profil.",
+    });
   }
 });
 
@@ -48,12 +44,10 @@ router.post("/", async (req, res) => {
     res.json(responseData);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Le serveur a rencontré un problème lors de la création du profil.",
-      });
+    res.status(500).json({
+      message:
+        "Le serveur a rencontré un problème lors de la création du profil.",
+    });
   }
 });
 

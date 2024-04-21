@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -13,10 +13,48 @@ import { useNavigate } from "react-router-dom";
 
 export function Login() {
   const nav = useNavigate();
+  const [error, setError] = React.useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  useEffect(() => {
+    setError("");
+  }, []);
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+  const handleLoginAccount = async (e) => {
+    e.preventDefault();
 
-  const handleLogin = () => {
-    console.log("Logging in");
-    nav("/");
+    try {
+      if (!email || !password) {
+        setError("Email and password are required");
+        return;
+      }
+
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+      console.log(response);
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message);
+      } else {
+        nav("/");
+      }
+    } catch (error) {
+      console.error("Error registering account:", error.message);
+    }
   };
 
   return (
@@ -32,44 +70,50 @@ export function Login() {
         <LockOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Sign in
+        Login
       </Typography>
-      <Box component="form" sx={{ mt: 1 }}>
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoFocus
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-        />
-        <FormControlLabel
-          control={<Checkbox value="remember" color="primary" />}
-          label="Remember me"
-        />
+      <Box component="form" noValidate sx={{ mt: 3 }}>
+        <Grid container spacing={2}>
+          <span>{error}</span>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              value={email}
+              onChange={handleEmailChange}
+              autoComplete="email"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              onChange={handlePasswordChange}
+              value={password}
+              autoComplete="new-password"
+            />
+          </Grid>
+        </Grid>
         <Button
           type="submit"
           fullWidth
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
-          onClick={handleLogin}
+          onClick={handleLoginAccount}
         >
           Sign In
         </Button>
-        <Grid container>
-          <Grid item xs>
+        <Grid container justifyContent="flex-end">
+          <Grid item>
             <Link href="/register" variant="body2">
-              No account yet ? Sign up
+              Dont have an account? Sign up
             </Link>
           </Grid>
         </Grid>

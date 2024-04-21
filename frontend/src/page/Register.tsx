@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -11,10 +11,63 @@ import { useNavigate } from "react-router-dom";
 
 export function Register() {
   const nav = useNavigate();
+  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  useEffect(() => {
+    setError("");
+  }, []);
+  const handleRegisterAccount = async (e) => {
+    e.preventDefault();
+    try {
+      if (!email || !password) {
+        setError("Email and password are required");
+        return;
+      }
+      console.log(email, password);
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
-  const handleRegisterAccount = () => {
-    console.log("Registering account");
-    nav("/login");
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message);
+        return;
+      }
+      const profileRes = await fetch("http://localhost:5000/api/profile", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "",
+          firstname: "",
+          age: 0,
+        }),
+      });
+      if (!profileRes.ok) {
+        throw new Error("Failed to create profile");
+      }
+      nav("/login");
+    } catch (error) {
+      console.error("Error registering account:", error.message);
+    }
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
   };
 
   return (
@@ -34,27 +87,7 @@ export function Register() {
       </Typography>
       <Box component="form" noValidate sx={{ mt: 3 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              autoComplete="given-name"
-              name="firstName"
-              required
-              fullWidth
-              id="firstName"
-              label="First Name"
-              autoFocus
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              fullWidth
-              id="lastName"
-              label="Last Name"
-              name="lastName"
-              autoComplete="family-name"
-            />
-          </Grid>
+          <span>{error}</span>
           <Grid item xs={12}>
             <TextField
               required
@@ -62,6 +95,8 @@ export function Register() {
               id="email"
               label="Email Address"
               name="email"
+              value={email}
+              onChange={handleEmailChange}
               autoComplete="email"
             />
           </Grid>
@@ -73,6 +108,8 @@ export function Register() {
               label="Password"
               type="password"
               id="password"
+              onChange={handlePasswordChange}
+              value={password}
               autoComplete="new-password"
             />
           </Grid>
