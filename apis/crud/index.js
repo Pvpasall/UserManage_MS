@@ -1,47 +1,52 @@
 require('./database/connexion');
-const User = require('./model/schema');
+const mongoose = require("mongoose");
+const Profile = require('./model/schema');
 
 const express = require('express');
 
 const app = express();
 app.use(express.json());
 
-app.get('/', function (req, res) {
-    res.send('hello world');
-});
-
-app.get('/users/:userId', async (req, res) => {
+app.get('/profile/:userId', async (req, res) => {
     try {
-        const userId = req.params.userId;
+        const userId= req.params.userId;
+       
+        const mongoUserId = new mongoose.Types.ObjectId(userId);
+       
+        const profile = await Profile.findOne({ userId: mongoUserId }).exec();
 
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        if (!profile) {
+            return res.status(404).json({ error: 'pas de profil sur ce compte' });
         }
-
-        res.status(200).json(user);
+        res.status(200).json(profile);
     } catch (error) {
         console.error('Erreur lors de la récupération de l\'utilisateur:', error);
         res.status(500).json({ error: 'Une erreur est survenue lors de la récupération de l\'utilisateur' });
     }
 });
 
-app.post('/users/new', async (req, res) => {
+app.post('/profile/:userId', async (req, res) => {
     try {
-        const { name, firstname, email, password, age } = req.body;
+      const { name, firstname, age, userId } = req.body;
+      const mongoUserId = new mongoose.Types.ObjectId(userId);
 
-        const newUser = new User({
-            name,
-            firstname,
-            email,
-            password,
-            age
+      // check if a profile already exists for the given userId
+      const existingProfile = await Profile.findOne({ userId: mongoUserId }).exec();
+      if (existingProfile) {
+        return res.status(400).json({
+          error: "Un profil existe déjà pour cet utilisateur.",
         });
+      }
 
-        const savedUser = await newUser.save();
+      const newUser = new Profile({
+        name,
+        firstname,
+        age,
+        userId: mongoUserId,
+      });
+      const savedUser = await newUser.save();
 
-        res.status(201).json(savedUser);
+      res.status(201).json(savedUser);
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).json({
@@ -50,30 +55,37 @@ app.post('/users/new', async (req, res) => {
     }
 });
 
-app.put('/users/update/:userId', async (req, res) => {
+app.put('/profile/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
         const newData = req.body;
+            const mongoUserId = new mongoose.Types.ObjectId(userId);
+          const updatedProfile = await Profile.findOneAndUpdate(
+            { userId: mongoUserId },
+            newData,
+            { new: true }
+          ).exec();
 
-        const updatedUser = await User.findByIdAndUpdate(userId, newData, { new: true });
-
-        if (!updatedUser) {
+        if (!updatedProfile) {
             return res.status(404).json({ error: 'Utilisateur non trouvé' });
         }
 
-        res.status(200).json(updatedUser);
+        res.status(200).json(updatedProfile);
     } catch (error) {
         console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
         res.status(500).json({ error: 'Une erreur est survenue lors de la mise à jour de l\'utilisateur' });
     }
 });
 
-app.delete('/users/delete/:userId', async (req, res) => {
+app.delete('/profile/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
-        const deletedUser = await User.findByIdAndDelete(userId);
+        const mongoUserId = new mongoose.Types.ObjectId(userId);
+         const deletedProfile = await Profile.findOneAndDelete({
+           userId: mongoUserId,
+         }).exec();
 
-        if (!deletedUser) {
+        if (!deletedProfile) {
             return res.status(404).json({ error: 'Utilisateur non trouvé' });
         }
 
@@ -84,7 +96,7 @@ app.delete('/users/delete/:userId', async (req, res) => {
     }
 });
 
-const port = 3000;
+const port = 3001;
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
