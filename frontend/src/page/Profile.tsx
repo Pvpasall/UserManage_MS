@@ -15,10 +15,10 @@ export function Profile() {
 
   const [name, setName] = useState("");
   const [profession, setProfession] = useState("");
+  const [age, setAge] = useState(""); // Nouvel état pour l'âge
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
 
   const handleLogout = () => {
-    const nav = useNavigate();
     setIsLoggedIn(false);
   };
 
@@ -28,6 +28,10 @@ export function Profile() {
 
   const handleProfessionChange = (event) => {
     setProfession(event.target.value);
+  };
+
+  const handleAgeChange = (event) => { // Fonction pour gérer les changements d'âge
+    setAge(event.target.value);
   };
 
   return (
@@ -69,6 +73,14 @@ export function Profile() {
               fullWidth
               value={profession}
               onChange={handleProfessionChange}
+              style={{ marginBottom: "10px" }}
+            />
+            <TextField
+              id="age" // Champ pour l'âge
+              label="Age"
+              fullWidth
+              value={age}
+              onChange={handleAgeChange}
               style={{ marginBottom: "10px" }}
             />
             <Button variant="contained" color="primary">
