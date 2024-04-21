@@ -51,21 +51,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //routes initialisation
-// const userRoutes = require("./routes/userRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 const authRoutes = require("./routes/auth");
 
 //auth routes
 require("./middlewares/auth");
 app.use("/api/auth", authRoutes);
 
-// secures routes
-// const passport = require("passport");
+// getway routes
+const passport = require("passport")
 
-// app.use(
-//   "/api/projects",
-//   passport.authenticate("jwt", { session: false }),
-//   projectsRoutes
-// );
+ app.use(
+   "/api/profile",
+   passport.authenticate("jwt", { session: false }),
+   profileRoutes
+ );
 // app.use(
 //   "/api/sections",
 //   passport.authenticate("jwt", { session: false }),
