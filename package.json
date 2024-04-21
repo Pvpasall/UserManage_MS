@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start": "react-scripts start",
+    "dev": "concurrently \"cd apis/auths && npm run dev\" \"cd apis/crud && npm run start\" \"cd frontend && npm run start\""
+  },
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
