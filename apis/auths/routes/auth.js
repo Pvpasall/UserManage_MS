@@ -48,18 +48,7 @@ router.post('/logout', async(req, res)=>{
         .status(200).json({isLogged:false});
 })
 
-router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
-        try {
-            const user = await userModel.findById(req.user._id);
-            if (!user) {
-                return res.status(404).json({ message: "User not found" });
-            }
-            res.status(200).json({ fullName: user.name, age: user.age, profession: user.profession });
-        } catch (error) {
-            console.error("Error fetching user profile:", error);
-            res.status(500).json({ message: "Internal server error" });
-        }
-    });
+
     
 
 
@@ -81,7 +70,7 @@ const authentification = (req, res, next)=>{
                         if(err){
                                 res.send(err);
                         }
-
+                        console.log(user.id);
                         //if the login pass we generate a token to the client
                         const token = jwt.sign({_id:user.id, email:user.email}, process.env.JWT_SECRET,{expiresIn:'1h'});
 
